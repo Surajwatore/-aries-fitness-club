@@ -540,6 +540,47 @@ label{font-size:.68rem;letter-spacing:.2em;color:var(--gold-d);text-transform:up
 /* Paid button neon */
 .paid-btn { background:linear-gradient(135deg,#00c853,#00ffff) !important; color:#000 !important; font-weight:700 !important; box-shadow:0 0 20px rgba(0,255,255,.3) !important; }
 </style>
+
+/* ANIMATED NEON BORDER AROUND LOGIN BOX */
+.login-box {
+  position: relative !important;
+  border-radius: 16px !important;
+  border: none !important;
+  background: rgba(5,5,15,.95) !important;
+  box-shadow: 0 0 40px rgba(255,0,255,.2) !important;
+}
+.login-box::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  border-radius: 18px;
+  background: linear-gradient(var(--angle), #ff00ff, #00ffff, #9b00ff, #ff00ff, #00ffff);
+  background-size: 300%;
+  animation: borderRotate 3s linear infinite;
+  z-index: -1;
+}
+.login-box::after {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  border-radius: 18px;
+  background: linear-gradient(var(--angle), #ff00ff, #00ffff, #9b00ff, #ff00ff);
+  background-size: 300%;
+  animation: borderRotate 3s linear infinite;
+  filter: blur(12px);
+  opacity: 0.6;
+  z-index: -2;
+}
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes borderRotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
 </head>
 <body>
 <div id="cur"></div><div id="cur-r"></div>
