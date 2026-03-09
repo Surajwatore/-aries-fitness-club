@@ -56,6 +56,45 @@ body.scroll{overflow-y:auto;overflow-x:hidden;}
 .nav-out:hover{border-color:var(--red);color:var(--red);}
 .nav-ham{display:none;background:none;border:1px solid rgba(200,255,0,.22);color:var(--n);width:34px;height:34px;font-size:.85rem;cursor:pointer;flex-shrink:0;}
 
+/* ── NAV MOBILE ── */
+@media(max-width:768px){
+  #nav{padding:0 14px;gap:0;}
+  .nav-lks{
+    display:none;
+    flex-direction:column;
+    position:fixed;top:58px;left:0;right:0;
+    background:rgba(6,6,6,.99);
+    border-bottom:1px solid rgba(200,255,0,.12);
+    padding:8px 0;
+    z-index:790;
+    backdrop-filter:blur(12px);
+  }
+  .nav-lks.open{display:flex!important;}
+  .nl{
+    padding:13px 20px;
+    font-size:.74rem;
+    text-align:left;
+    border-bottom:1px solid rgba(255,255,255,.04);
+    width:100%;
+  }
+  .nl:last-child{border-bottom:none;}
+  .nav-r{gap:6px;}
+  .nav-un{max-width:70px;font-size:.52rem;}
+  .nav-join{font-size:.55rem;padding:6px 10px;letter-spacing:.08em;}
+  .nav-out{font-size:.55rem;padding:5px 8px;}
+  .nav-ham{display:flex!important;align-items:center;justify-content:center;}
+  /* Mobile nav: add logout+profile inside dropdown */
+  .nav-mobi-extra{display:flex;flex-direction:column;}
+  .nav-mobi-extra button{
+    padding:13px 20px;font-size:.74rem;text-align:left;
+    background:none;border:none;border-bottom:1px solid rgba(255,255,255,.04);
+    color:rgba(255,255,255,.5);font-family:'Barlow Condensed';
+    font-weight:700;letter-spacing:.1em;cursor:pointer;width:100%;
+  }
+  .nav-mobi-extra .join-m{color:var(--n);}
+  .nav-mobi-extra .logout-m{color:rgba(255,80,80,.6);}
+}
+
 /* ── LOGIN ── */
 #pg-login{background:#000;}
 .lw{min-height:100vh;display:flex;}
@@ -935,6 +974,26 @@ button { position:relative; overflow:hidden; }
 .cs-row{display:flex;justify-content:space-between;font-family:'Barlow Condensed';font-size:.66rem;color:rgba(255,255,255,.35);}
 .cs-row.disc{color:var(--green);}
 .cs-row.total{color:var(--wh);font-weight:700;font-size:.78rem;border-top:1px solid rgba(255,255,255,.08);padding-top:6px;margin-top:2px;}
+
+/* ══ ADMIN NOTIFICATION BELL ══ */
+.notif-bell{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--wh);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:.9rem;transition:all .2s;position:relative;}
+.notif-bell:hover{background:rgba(200,255,0,.1);border-color:rgba(200,255,0,.3);transform:scale(1.1);}
+.notif-bell.ringing{animation:bellRing .5s ease-in-out 3;}
+@keyframes bellRing{0%,100%{transform:rotate(0)}25%{transform:rotate(-15deg)}75%{transform:rotate(15deg)}}
+.notif-count{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-family:'Bebas Neue';font-size:.55rem;width:16px;height:16px;border-radius:50%;display:flex!important;align-items:center;justify-content:center;border:1.5px solid #000;animation:ndBlink 1s ease infinite;}
+.notif-bell-wrap{position:relative;}
+.notif-panel{position:absolute;right:0;top:42px;width:300px;background:#0a0a0a;border:1px solid rgba(200,255,0,.15);box-shadow:0 8px 32px rgba(0,0,0,.8);z-index:999;max-height:380px;overflow:hidden;display:flex;flex-direction:column;}
+@media(max-width:768px){.notif-panel{right:-80px;width:260px;}}
+.notif-panel-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.06);font-family:'Barlow Condensed';font-size:.66rem;font-weight:700;letter-spacing:.1em;color:var(--n);flex-shrink:0;}
+.notif-list{overflow-y:auto;flex:1;}
+.notif-item{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .2s;}
+.notif-item:hover{background:rgba(255,255,255,.03);}
+.notif-item.unread{border-left:3px solid var(--n);}
+.notif-item.unread.fire{border-left-color:var(--fire);}
+.ni-title{font-family:'Barlow Condensed';font-size:.68rem;font-weight:700;color:var(--wh);letter-spacing:.06em;}
+.ni-body{font-family:'Barlow Condensed';font-size:.6rem;color:rgba(255,255,255,.35);margin-top:2px;}
+.ni-time{font-family:'Barlow Condensed';font-size:.5rem;color:rgba(255,255,255,.18);margin-top:3px;}
+.notif-empty{padding:20px;text-align:center;font-family:'Barlow Condensed';font-size:.62rem;color:rgba(255,255,255,.2);}
 </style>
 </head>
 <body>
@@ -946,14 +1005,29 @@ button { position:relative; overflow:hidden; }
 <nav id="nav">
   <div class="nav-logo" onclick="goPage('gym')"><div class="nav-d"></div>ARIES</div>
   <div class="nav-lks" id="nav-lks">
-    <button class="nl on" id="nl-gym"      onclick="go('gym')">Home</button>
-    <button class="nl"   id="nl-plans"     onclick="go('plans')">Plans</button>
-    <button class="nl"   id="nl-fitness"   onclick="go('fitness')">Fitness</button>
-    <button class="nl"   id="nl-location"  onclick="go('location')">Location</button>
-    <button class="nl"   id="nl-profile"   onclick="go('profile')">Profile</button>
+    <button class="nl on" id="nl-gym"      onclick="go('gym');closeMobiNav()">Home</button>
+    <button class="nl"   id="nl-plans"     onclick="go('plans');closeMobiNav()">Plans</button>
+    <button class="nl"   id="nl-fitness"   onclick="go('fitness');closeMobiNav()">Fitness</button>
+    <button class="nl"   id="nl-location"  onclick="go('location');closeMobiNav()">Location</button>
+    <button class="nl"   id="nl-profile"   onclick="go('profile');closeMobiNav()">Profile</button>
   </div>
   <div class="nav-r">
     <span class="nav-un" id="nav-un"></span>
+    <!-- Admin notification bell -->
+    <div class="notif-bell-wrap" id="notif-bell-wrap" style="display:none;position:relative;">
+      <button class="notif-bell" id="notif-bell" onclick="toggleNotifPanel()">🔔</button>
+      <span class="notif-count" id="notif-count" style="display:none;">0</span>
+      <!-- Notification dropdown -->
+      <div class="notif-panel" id="notif-panel" style="display:none;">
+        <div class="notif-panel-head">
+          <span>🔔 Notifications</span>
+          <button onclick="clearNotifs()" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.6rem;cursor:pointer;font-family:'Barlow Condensed';letter-spacing:.1em;">CLEAR ALL</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div class="notif-empty">No notifications yet</div>
+        </div>
+      </div>
+    </div>
     <button class="nav-join" onclick="go('plans')">JOIN NOW</button>
     <button class="nav-out" onclick="doLogout()">LOGOUT</button>
     <button class="nav-ham" onclick="toggleMobileNav()">☰</button>
@@ -1707,11 +1781,32 @@ function goPage(p){
   if(p==='admin'){renderPlansEd();renderOffersEd();renderMem();renderProdsAdmin();loadUPIAdmin();loadSettings();}
 }
 function go(p){goPage(p);}
+function closeMobiNav(){
+  const nl=document.getElementById('nav-lks');
+  if(nl)nl.classList.remove('open');
+}
 function toggleMobileNav(){
   const nl=document.getElementById('nav-lks');
   if(!nl)return;
-  const open=nl.style.display==='flex';
-  nl.style.cssText=open?'':`display:flex;flex-direction:column;position:fixed;top:58px;left:0;right:0;background:rgba(8,8,8,.99);padding:10px;border-bottom:1px solid rgba(200,255,0,.12);z-index:790;`;
+  const isOpen=nl.classList.contains('open');
+  if(isOpen){
+    nl.classList.remove('open');
+    // Remove extra mobile buttons if added
+    const ex=nl.querySelector('.nav-mobi-extra');
+    if(ex)ex.remove();
+  } else {
+    nl.classList.add('open');
+    // Add JOIN NOW + LOGOUT at bottom of dropdown if not already there
+    if(!nl.querySelector('.nav-mobi-extra')){
+      const ex=document.createElement('div');
+      ex.className='nav-mobi-extra';
+      ex.innerHTML=`
+        <button class="join-m" onclick="go('plans');toggleMobileNav()">JOIN NOW 💪</button>
+        <button class="logout-m" onclick="doLogout();toggleMobileNav()">LOGOUT</button>
+      `;
+      nl.appendChild(ex);
+    }
+  }
 }
 
 // TAB
@@ -1750,11 +1845,12 @@ function doSignup(){
 }
 function doAdmin(){
   const pw=document.getElementById('a-pw').value;
-  if(pw===S.adminPw){goPage('admin');toast('Admin access granted!');}
+  if(pw===S.adminPw){goPage('admin');toast('Admin access granted!');const bw=document.getElementById('notif-bell-wrap');if(bw)bw.style.display='flex';askNotifPermission();}
   else toast('Wrong password!','var(--red)');
 }
 function doLogout(){
   S.user=null;
+  const bw=document.getElementById('notif-bell-wrap');if(bw)bw.style.display='none';
   const btn=document.getElementById('btn-login');if(btn){btn.textContent='SIGN IN';btn.disabled=false;}
   document.getElementById('login-succ').style.display='none';
   document.getElementById('l-em').value='';document.getElementById('l-pw').value='';
@@ -1894,7 +1990,9 @@ function renderPur(){
     const edStr=ed.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
     const ph=S.purchase.photoData||`data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='24' fill='%231a1a1a'/%3E%3Ccircle cx='24' cy='18' r='8' fill='%23333'/%3E%3Cellipse cx='24' cy='42' rx='13' ry='9' fill='%23333'/%3E%3C/svg%3E`;
     if(S.user)S.user.plan=plan;
-    S.payments.push({name,plan,amount:S.purchase.plan?.price||0,date:sd,mid,phone:S.purchase.phone||''});
+    const me3=new Date();me3.setMonth(me3.getMonth()+months);
+    S.members.push({name,plan,phone:S.purchase.phone||'',email:S.purchase.email||'',photo:'',date:sd,memberStart:new Date().toISOString(),memberEnd:me3.toISOString(),memberId:mid,status:'ACTIVE',months});
+    S.payments.push({name,plan,amount:S.purchase.plan?.price||0,date:sd,mid,phone:S.purchase.phone||'',status:'PAID'});
     const nd=document.getElementById('mem-nd');if(nd)nd.style.display='';
     saveSheet({name,email:S.purchase.email||'',phone:S.purchase.phone||'',plan,amount:S.purchase.plan?.price||0,date:sd,memberId:mid});
     sendEmail({name,email:S.purchase.email||'',plan,amount:S.purchase.plan?.price||0,memberId:mid});
@@ -1938,7 +2036,16 @@ function confirmPay(){
   const pd=document.getElementById('pay-done');if(pd)pd.style.display='block';
   S.payments.push({...S.purchase,status:'PAID',date:new Date().toLocaleDateString('en-IN')});
   const nd=document.getElementById('mem-nd');if(nd)nd.style.display='';
-  toast('Payment confirmed! Activate करा →');
+  // 🔔 ADMIN NOTIFICATION
+  const pName=S.purchase.name||'New Member';
+  const pPlan=S.purchase.plan?.name||'Plan';
+  const pAmt=S.purchase.plan?.price||0;
+  addNotif(
+    '💰 New Purchase!',
+    pName+' joined '+pPlan+' — ₹'+pAmt.toLocaleString('en-IN'),
+    'purchase'
+  );
+  toast('Payment confirmed! ✓');
 }
 
 // PROFILE
@@ -2005,7 +2112,7 @@ function renderMem(){
   const all=[...S.members,...S.payments.filter(p=>p.status==='PAID').map(p=>({name:p.name,plan:p.plan,phone:p.phone||'',date:p.date,memberStart:p.date,memberEnd:p.memberEnd||'',status:'NEW_PAYMENT'}))];
   const list=all.filter(m=>!q||[m.name,m.plan,m.phone].some(x=>(x||'').toLowerCase().includes(q)));
   const ph=`data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='14' fill='%231a1a1a'/%3E%3C/svg%3E`;
-  const fmt=d=>{try{return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}catch{return d||'—';}};
+  const fmt=d=>{if(!d||d==='—')return'—';try{const dt=new Date(d);if(!isNaN(dt.getTime()))return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});return d;}catch{return d||'—';}};
   const daysLeft=d=>{if(!d)return null;const diff=Math.round((new Date(d)-new Date())/(1000*60*60*24));return diff;};
   // Update dashboard stats
   const totalM=all.length;
@@ -2032,7 +2139,44 @@ function renderMem(){
     <td><span style="background:${m.status==='NEW_PAYMENT'?'rgba(255,215,0,.08)':'rgba(0,200,80,.07)'};color:${m.status==='NEW_PAYMENT'?'var(--gold)':'var(--green)'};font-family:'Barlow Condensed';font-size:.56rem;font-weight:700;letter-spacing:.07em;padding:2px 7px;">${m.status==='NEW_PAYMENT'?'⚡ NEW':'ACTIVE'}</span></td>
   </tr>`;}).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--gr);padding:18px;">${all.length?'No results':'No members yet'}</td></tr>`;
 }
-async function loadSheet(){toast('Loading...');try{const r=await fetch(SHEET+'?action=getMembers');const d=await r.json();if(d.members){S.members=d.members;renderMem();toast(d.members.length+' members loaded!');}else toast('No data');}catch(e){toast('Sheet load failed','var(--red)');}}
+async function loadSheet(){
+  toast('Loading...');
+  try{
+    const r=await fetch(SHEET+'?action=getMembers');
+    const d=await r.json();
+    if(d.members&&d.members.length){
+      // Map sheet columns to member object
+      S.members=d.members.map(m=>{
+        const name=m.name||m.Name||m[0]||'—';
+        const plan=m.plan||m.Plan||m[2]||'—';
+        const phone=m.phone||m.Phone||m[3]||'—';
+        const email=m.email||m.Email||m[1]||'';
+        const date=m.date||m.Date||m[4]||'';
+        const memberId=m.memberId||m.MemberId||m[5]||'';
+        const months=parseInt(m.months||m.Months||1)||1;
+        // Calculate end date from join date + months
+        let memberEnd='';
+        if(date){
+          try{
+            const sd=new Date(date);
+            if(!isNaN(sd)){
+              const ed=new Date(sd);
+              ed.setMonth(ed.getMonth()+months);
+              memberEnd=ed.toISOString();
+            }
+          }catch(e){}
+        }
+        return{name,plan,phone,email,date,memberStart:date,memberEnd,memberId,status:'ACTIVE',months};
+      });
+      renderMem();
+      toast(S.members.length+' members loaded! ✓');
+    }else{
+      toast('No members in sheet');
+    }
+  }catch(e){
+    toast('Sheet load failed: '+e.message,'var(--red)');
+  }
+}
 
 // ADMIN — UPI
 function loadUPIAdmin(){document.getElementById('upi-id-i').value=S.upi.id||'';document.getElementById('upi-nm-i').value=S.upi.name||'';document.getElementById('upi-inst-i').value=S.upi.inst||'';}
@@ -2406,6 +2550,132 @@ function applyCoupon(){
     S.purchase.discAmt = 0;
     if(msgEl) msgEl.innerHTML='<span class="coup-err">✗ Invalid or expired coupon</span>';
     toast('Invalid coupon code!','var(--red)');
+  }
+}
+
+
+// ══ ADMIN - MANUAL MEMBER ADD ══
+function showAddMember(){
+  const f=document.getElementById('add-member-form');
+  if(f){
+    f.style.display=f.style.display==='none'?'block':'none';
+    // Set today as default date
+    const di=document.getElementById('am-date');
+    if(di&&!di.value)di.value=new Date().toISOString().split('T')[0];
+  }
+}
+function addMemberManual(){
+  const name=document.getElementById('am-name')?.value?.trim();
+  if(!name){toast('Name required!','var(--red)');return;}
+  const phone=document.getElementById('am-phone')?.value||'—';
+  const plan=document.getElementById('am-plan')?.value||'Silver';
+  const months=parseInt(document.getElementById('am-months')?.value)||1;
+  const dateVal=document.getElementById('am-date')?.value||new Date().toISOString().split('T')[0];
+  const startDate=new Date(dateVal);
+  const endDate=new Date(dateVal);
+  endDate.setMonth(endDate.getMonth()+months);
+  const mid='ARIES-'+Math.floor(1000+Math.random()*9000);
+  const fmtD=d=>d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  S.members.push({
+    name:name.toUpperCase(), plan, phone, email:'',
+    date:fmtD(startDate),
+    memberStart:startDate.toISOString(),
+    memberEnd:endDate.toISOString(),
+    memberId:mid, status:'ACTIVE', months, photo:''
+  });
+  document.getElementById('add-member-form').style.display='none';
+  ['am-name','am-phone','am-months'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderMem();
+  toast(name+' added! ✓');
+}
+
+
+// ══ NOTIFICATION SYSTEM ══
+const NOTIFS = [];
+
+function addNotif(title, body, type='new'){
+  const n={id:Date.now(),title,body,time:new Date(),unread:true,type};
+  NOTIFS.unshift(n);
+  renderNotifs();
+  // Ring bell
+  const bell=document.getElementById('notif-bell');
+  if(bell){bell.classList.add('ringing');setTimeout(()=>bell.classList.remove('ringing'),1600);}
+  // Show count
+  updateNotifCount();
+  // Browser notification (if permitted)
+  if(Notification.permission==='granted'){
+    new Notification('🏋️ ARIES FITNESS CLUB', {body:title+' — '+body, icon:''});
+  }
+}
+
+function updateNotifCount(){
+  const unread=NOTIFS.filter(n=>n.unread).length;
+  const cnt=document.getElementById('notif-count');
+  if(cnt){
+    cnt.textContent=unread>9?'9+':unread;
+    cnt.style.display=unread>0?'flex':'none';
+  }
+}
+
+function renderNotifs(){
+  const el=document.getElementById('notif-list');
+  if(!el)return;
+  if(!NOTIFS.length){el.innerHTML='<div class="notif-empty">No notifications yet</div>';return;}
+  const fmt=t=>{
+    const diff=Math.round((new Date()-new Date(t))/60000);
+    if(diff<1)return'Just now';if(diff<60)return diff+'m ago';
+    if(diff<1440)return Math.round(diff/60)+'h ago';
+    return new Date(t).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+  };
+  el.innerHTML=NOTIFS.map(n=>`
+    <div class="notif-item ${n.unread?'unread':''}${n.type==='purchase'?' fire':''}" onclick="markRead(${n.id})">
+      <div class="ni-title">${n.type==='purchase'?'💰':n.type==='new'?'🆕':'ℹ️'} ${n.title}</div>
+      <div class="ni-body">${n.body}</div>
+      <div class="ni-time">${fmt(n.time)}</div>
+    </div>`).join('');
+}
+
+function markRead(id){
+  const n=NOTIFS.find(x=>x.id===id);
+  if(n)n.unread=false;
+  updateNotifCount();
+  renderNotifs();
+}
+
+function clearNotifs(){
+  NOTIFS.length=0;
+  updateNotifCount();
+  renderNotifs();
+  document.getElementById('notif-panel').style.display='none';
+}
+
+function toggleNotifPanel(){
+  const p=document.getElementById('notif-panel');
+  if(!p)return;
+  const open=p.style.display==='flex'||p.style.display==='block';
+  p.style.display=open?'none':'flex';
+  p.style.flexDirection='column';
+  if(!open){
+    // Mark all as read when opened
+    NOTIFS.forEach(n=>n.unread=false);
+    updateNotifCount();
+    renderNotifs();
+  }
+}
+
+// Close notif panel when clicking outside
+document.addEventListener('click',function(e){
+  const wrap=document.getElementById('notif-bell-wrap');
+  if(wrap&&!wrap.contains(e.target)){
+    const p=document.getElementById('notif-panel');
+    if(p)p.style.display='none';
+  }
+});
+
+// Ask browser notification permission
+function askNotifPermission(){
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
   }
 }
 
