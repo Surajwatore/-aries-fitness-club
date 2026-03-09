@@ -2682,22 +2682,42 @@ function askNotifPermission(){
 // BOOT
 (function(){
   const prog=document.getElementById('ld-prog'),pct=document.getElementById('ld-pct');
-  let p=0;
-  // Init animations
-  initHeroLines();initLoginParticles();initLoginBars();
+  let p=0,done=false;
+  // Init animations safely
+  try{initHeroLines();}catch(e){}
+  try{initLoginParticles();}catch(e){}
+  try{initLoginBars();}catch(e){}
+
+  function gotoLogin(){
+    if(done)return;
+    done=true;
+    const ld=document.getElementById('pg-load');
+    if(ld){
+      ld.style.opacity='0';
+      ld.style.transition='opacity .6s';
+      setTimeout(()=>{
+        ld.classList.remove('on');
+        goPage('login');
+        try{renderTrainers();}catch(e){}
+      },600);
+    } else {
+      goPage('login');
+    }
+  }
+
   const iv=setInterval(()=>{
-    p+=Math.random()*13+4;if(p>100)p=100;
+    p+=Math.random()*14+5;
+    if(p>100)p=100;
     if(prog)prog.style.width=p+'%';
     if(pct)pct.textContent=Math.round(p)+'%';
     if(p>=100){
       clearInterval(iv);
-      setTimeout(()=>{
-        const ld=document.getElementById('pg-load');
-        if(ld){ld.style.opacity='0';ld.style.transition='opacity .5s';setTimeout(()=>{ld.classList.remove('on');goPage('login');renderTrainers();},500);}
-        else{goPage('login');}
-      },600);
+      setTimeout(gotoLogin, 500);
     }
-  },120);
+  },100);
+
+  // FAILSAFE: if still stuck after 5 seconds, force redirect
+  setTimeout(()=>{ if(!done){ clearInterval(iv); gotoLogin(); } }, 5000);
 })();
 </script>
 </body>
